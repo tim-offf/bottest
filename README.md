@@ -112,6 +112,31 @@ bot/
    sudo systemctl status telegram-bot.service
    ```
 
+## Запуск в Docker (Yandex Cloud Container Registry)
+
+1. **Соберите образ**:
+   ```bash
+   docker build -t yc-bot:latest .
+   ```
+2. **Проверьте локально (опционально)**:
+   ```bash
+   docker run --rm --env-file .env yc-bot:latest
+   ```
+3. **Подготовьте Container Registry** в Yandex Cloud и залогиньтесь:
+   ```bash
+   yc container registry configure-docker
+   ```
+4. **Переименуйте образ и отправьте в реестр**:
+   ```bash
+   docker tag yc-bot:latest cr.yandex/<registry_id>/yc-bot:latest
+   docker push cr.yandex/<registry_id>/yc-bot:latest
+   ```
+5. **Запуск контейнера на VM**:
+   ```bash
+   docker run -d --name yc-bot --restart unless-stopped --env-file /path/to/.env \\
+     cr.yandex/<registry_id>/yc-bot:latest
+   ```
+
 ## Примечания
 - Бот использует один активный сезон. При запуске создаётся сезон, если его нет.
 - Победители сохраняются в таблице `winners`.
